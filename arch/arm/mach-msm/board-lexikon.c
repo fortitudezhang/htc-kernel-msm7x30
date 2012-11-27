@@ -179,6 +179,22 @@ static struct platform_device usb_mass_storage_device = {
 	},
 };
 
+#ifdef CONFIG_USB_ANDROID_RNDIS
+static struct usb_ether_platform_data rndis_pdata = {
+	/* ethaddr is filled by board_serialno_setup */
+	.vendorID       = 0x18d1,
+	.vendorDescr    = "Google, Inc.",
+};
+
+static struct platform_device rndis_device = {
+	.name   = "rndis",
+	.id     = -1,
+	.dev    = {
+		.platform_data = &rndis_pdata,
+	},
+};
+#endif
+
 static struct android_usb_platform_data android_usb_pdata = {
 	.vendor_id	= 0x0bb4,
 	.product_id	= 0x0c8e,
@@ -201,20 +217,6 @@ static struct platform_device android_usb_device = {
 		.platform_data = &android_usb_pdata,
 	},
 };
-
-void lexikon_add_usb_devices(void)
-{
-	android_usb_pdata.products[0].product_id =
-		android_usb_pdata.product_id;
-	msm_hsusb_pdata.serial_number = board_serialno();
-	android_usb_pdata.serial_number = board_serialno();
-	msm_device_hsusb.dev.platform_data = &msm_hsusb_pdata;
-	config_lexikon_usb_id_gpios(0);
-	lexikon_change_phy_voltage(0);
-	platform_device_register(&msm_device_hsusb);
-	platform_device_register(&usb_mass_storage_device);
-	platform_device_register(&android_usb_device);
-}
 #endif
 
 static int flashlight_control(int mode)
@@ -2513,23 +2515,27 @@ static void __init lexikon_init(void)
 	lexikon_microp_init();
 #endif
 #ifdef CONFIG_USB_ANDROID
-	lexikon_add_usb_devices();
+	android_usb_pdata.products[0].product_id =
+		android_usb_pdata.product_id;
+	msm_hsusb_pdata.serial_number = board_serialno();
+	android_usb_pdata.serial_number = board_serialno();
+	msm_device_hsusb.dev.platform_data = &msm_hsusb_pdata;
+	platform_device_register(&msm_device_hsusb);
+#ifdef CONFIG_USB_ANDROID_RNDIS
+       platform_device_register(&rndis_device);
 #endif
-#ifdef CONFIG_USB_FUNCTION
-	msm_add_usb_devices(NULL, NULL);
+	platform_device_register(&usb_mass_storage_device);
+	platform_device_register(&android_usb_device);
 #endif
 
 	msm_add_mem_devices(&pmem_setting);
-	
-	#if 0
-	if (system_rev == 0) /* For XA board */
-		tps65200_data.gpio_chg_int = 0;
-	#endif
 
 	platform_add_devices(devices, ARRAY_SIZE(devices));
 
 	if (board_emmc_boot()) {
+#if defined(CONFIG_MSM_RMT_STORAGE_SERVER)
 		rmt_storage_add_ramfs();
+#endif
 		create_proc_read_entry("emmc", 0, NULL, emmc_partition_read_proc, NULL);
 	} else
 		platform_device_register(&msm_device_nand);
