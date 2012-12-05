@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.35.14
-# Thu Nov 29 17:53:39 2012
+# Tue Dec  4 19:27:18 2012
 #
 CONFIG_ARM=y
 CONFIG_SYS_SUPPORTS_APM_EMULATION=y
@@ -1738,6 +1738,7 @@ CONFIG_USB_ACCESSORY_DETECT=y
 # CONFIG_DOCK_ACCESSORY_DETECT is not set
 # CONFIG_USB_BYPASS_VBUS_NOTIFY is not set
 # CONFIG_USB_HUB is not set
+CONFIG_USB_HTC_SWITCH_STUB=y
 
 #
 # OTG and related infrastructure
