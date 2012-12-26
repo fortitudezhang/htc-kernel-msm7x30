@@ -391,7 +391,7 @@ static int capella_cm3602_power(int pwr_device, uint8_t enable);
 static struct microp_function_config microp_lightsensor_function = {
 	.name = "light_sensor",
 	.category = MICROP_FUNCTION_LSENSOR,
-	.levels = { 0, 0, 0, 0x37, 0xD3, 0xD3, 0x143, 0x143, 0x3FF, 0x3FF },
+	.levels = { 0x1, 0x3, 0x5, 0x13, 0x1A, 0x45, 0xDB, 0x135, 0x1F2, 0x3FF },
 	.channel = 3,
 	.int_pin = 1 << 9,
 	.golden_adc = 0xC0,
