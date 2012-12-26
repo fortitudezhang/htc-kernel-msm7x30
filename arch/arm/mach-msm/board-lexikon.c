@@ -388,21 +388,6 @@ static struct platform_device htc_battery_pdev = {
 
 static int capella_cm3602_power(int pwr_device, uint8_t enable);
 
-static struct microp_function_config microp_lightsensor_function = {
-	.name = "light_sensor",
-	.category = MICROP_FUNCTION_LSENSOR,
-	.levels = { 0, 0, 0, 0x37, 0xD3, 0xD3, 0x143, 0x143, 0x3FF, 0x3FF },
-	.channel = 3,
-	.int_pin = 1 << 9,
-	.golden_adc = 0xC0,
-	.ls_power = capella_cm3602_power,
-};
-
-static struct lightsensor_platform_data lightsensor_data = {
-	.config = &microp_lightsensor_function,
-	.irq = MSM_uP_TO_INT(9),
-};
-
 /*static struct microp_led_config led_config[] = {
 	{
 		.name = "amber",
@@ -428,12 +413,6 @@ static struct microp_led_platform_data microp_leds_data = {
 };*/
 
 static struct platform_device microp_devices[] = {
-	{
-		.name = "lightsensor_microp",
-		.dev = {
-			.platform_data = &lightsensor_data,
-		},
-	},
 	/*{
 		.name = "leds-microp",
 		.id = -1,
@@ -645,6 +624,21 @@ static struct platform_device capella_cm3602 = {
 	.id = -1,
 	.dev = {
 		.platform_data = &capella_cm3602_pdata
+	}
+};
+
+static struct lightsensor_smd_platform_data lightsensor_data = {
+	.levels = { 0x50, 0x100, 0x200, 0x950, 0x1776, 0x4329, 0x7140, 0x8360,
+			0x9580, 0xFFFF },
+	.golden_adc = 0x47C0,
+	.ls_power = capella_cm3602_power,
+};
+
+static struct platform_device lightsensor_pdev = {
+	.name = "lightsensor_smd",
+	.id = -1,
+	.dev = {
+		.platform_data = &lightsensor_data
 	}
 };
 
@@ -2217,6 +2211,7 @@ static struct platform_device *devices[] __initdata = {
 	&msm_rotator_device,
 #endif
 	&pm8058_leds,
+	&lightsensor_pdev,
 };
 
 static struct msm_i2c_device_platform_data msm_i2c_pdata = {
